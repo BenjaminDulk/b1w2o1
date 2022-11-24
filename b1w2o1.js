@@ -1,64 +1,96 @@
 // Benjamin den Dulk
 // Front-End Development opleiding
+// Adapted by Antony den Dulk
 
-var morepiz = 0; //zet variabel voor de vraag of de gebruiker meer wil bestellen
-var spizamount = 0; 
-var mpizamount = 0;
-var lpizamount = 0; // zet variabels voor gevraagde hoeveelheid van elke afmeting
-const spizprice = 6.99; //kleine pizza kost 6,99
-const mpizprice = 9.99; //medium pizza kost 9,99
-const lpizprice = 12.99; //grote pizza kost 12,99
+// Texts
+const questionPizzaSize =
+	"What size would you like?"
+	+ "\nType in S for small, M for medium or L for large.";
+const questionPizzaAmount =
+	"How many <size> pizzas would you like to order?";
+const questionChangeAmount =
+	"You already have ordered <total> <size> pizzas."
+	+ "\nWould you like to change this number? (Y/N)";
 
+// Arrays with required data - small then medium then large.
+const answersYesNo = ["Y", "N"];
+const answersPizzaSizes = ["S", "M", "L"];
+const pizzaSizes = ["small", "medium", "large"]
+const pizzaPrices = [6.99, 9.99, 12.99]
+var pizzaTotals = [0, 0, 0]
+var totalPrice = 0;
+var currentPizzaSize = -1;
+var yesNo;
 
-while (morepiz == 0) { //terwijl de gebruiker niet wenst om de loop stop te zetten...
-	let pizchoice = prompt("What size would you like? Type in s for small, m for medium or l for large."); //vraag om gewenste afmeting, wat dan een bepaalde branch activeert dat afhangt van de antwoord
-	if (pizchoice == "s") { //"gebruiker vraagt om kleine pizzas" branch
-		if (spizamount == 0) { //als de gebruiker (nog) niet voor kleine pizzas heeft gevraagd...
-			spizamount = prompt("How many small pizzas would you like to order?"); //vraag om gewenste hoeveelheid kleine pizzas
-			lastsize = "small" //zet de "lastsize" variabel op welke afmeting de gebruiker als laatst heeft gevraagd, in dit geval klein
-			} else { //als de gebruiker in een eerdere loop al om kleine pizzas had gevraagd...
-				rewritesamount = prompt("You already have ordered "+ spizamount +" small pizzas. Would you like to change this number? (Y/N)"); //notificeer gebruiker over al gevraagde afmeting, vraag om confirmatie
-				if (rewritesamount == "Y") { //als de gebruiker confirmeert... (in geval van een andere antwoord zal de loop resetten)
-					spizamount = prompt("How many small pizzas would you like to order?"); //vraag weer over gewenste hoeveelheid kleine pizzas
-					lastsize = "small" //zet de "lastsize" variabel op klein
-					}
-		} 
-	} else if (pizchoice == "m") { //"gebruiker vraagt om medium pizzas" branch
-		if (mpizamount == "0") { //als de gebruiker (nog) niet voor medium pizzas heeft gevraagd...
-			mpizamount = prompt("How many medium pizzas would you like to order?"); //vraag om gewenste hoeveelheid kleine pizzas
-			lastsize = "medium" //zet de "lastsize" variabel op medium
-			} else { //als de gebruiker in een eerdere loop al om medium pizzas had gevraagd...
-				rewritemamount = prompt("You already have ordered "+ mpizamount +" medium pizzas. Would you like to change this number? (Y/N)"); //notificeer gebruiker over al gevraagde afmeting, vraag om confirmatie
-				if (rewritemamount == "Y") {//als de gebruiker confirmeert... (in geval van een andere antwoord zal de loop resetten)
-					mpizamount = prompt("How many medium pizzas would you like to order?"); //vraag weer over gewenste hoeveelheid medium pizzas
-					lastsize = "medium" //zet de "lastsize" variabel op medium
-					}
-		}
-	} else if (pizchoice == "l") { //"gebruiker vraagt om grote pizzas" branch
-		if (lpizamount == "0") { //als de gebruiker (nog) niet voor kleine pizzas heeft gevraagd...
-			lpizamount = prompt("How many large pizzas would you like to order?"); //vraag om gewenste hoeveelheid kleine pizzas
-			lastsize = "large" //zet de "lastsize" variabel op groot
-			} else { //als de gebruiker in een eerdere loop al om grote pizzas had gevraagd...
-				rewritelamount = prompt("You already have ordered "+ lpizamount +" large pizzas. Would you like to change this number? (Y/N)"); //notificeer gebruiker over al gevraagde afmeting, vraag om confirmatie
-				if (rewritelamount == "Y") {//als de gebruiker confirmeert... (in geval van een andere antwoord zal de loop resetten)
-					lpizamount = prompt("How many large pizzas would you like to order?"); //vraag weer over gewenste hoeveelheid grote pizzas
-					lastsize = "large"//zet de "lastsize" variabel op groot
-					}
-		}
-	} else break; //als de gebruiker een andere antwoord geeft dan s, m of l, reset de loop
-	let morepizchoice = prompt("Do you want to order different sizes other than "+ lastsize +"? (Y/N)"); //als de gebruiker een afmeting heeft gekozen, vraag of ze een andere afmeting willen
-	if (morepizchoice == "N"){ //als de gebruiker niet meer wil bestellen...
-		morepiz = 1 //verander de variabel dat de loop gebruikt om te herhalen
-	} 
+function questionHowManyPizzas(currentPizzaSize) {
+	do {
+		amount = prompt(
+			questionPizzaAmount
+				.replace("<size>", pizzaSizes[currentPizzaSize])
+		);
+	} while (amount == "" || isNaN(amount));
+	return amount;
 }
 
-if (spizamount > 0) { //als de gebruiker voor kleine pizzas had gevraagd tijdens de loop...
-	document.write("Small Pizza "+ spizprice +" x "+ spizamount +" = "+ (spizamount * spizprice) +"<br>") //bereken en print de prijs van alle kleine pizzas dat werd gevraagd
+function questionChangePizzaTotal(currentPizzaSize) {
+	// Notificeer gebruiker over al gevraagde afmeting, vraag om confirmatie
+	return prompt(
+		questionChangeAmount
+			.replace("<size>", pizzaSizes[currentPizzaSize])
+			.replace("<total>", pizzaTotals[currentPizzaSize])).toUpperCase();
 }
-if (mpizamount > 0) { //als de gebruiker voor medium pizzas had gevraagd tijdens de loop...
-	document.write("Medium Pizza "+ mpizprice +" x "+ mpizamount +" = "+ (mpizamount * mpizprice) +"<br>") //bereken en print de prijs van alle medium pizzas dat werd gevraagd
+
+function questionAddToOrder(currentPizzaSize) {
+	//als de gebruiker een afmeting heeft gekozen, vraag of ze een andere afmeting willen
+	return prompt(
+		"Last size ordered - " + capitalizeFirstLetter(pizzaSizes[currentPizzaSize])
+		+ "\nDo you want to add more pizzas to your order? (Y/N)"
+	).toUpperCase();
 }
-if (lpizamount > 0) { //als de gebruiker voor grote pizzas had gevraagd tijdens de loop...
-	document.write("Large Pizza "+ lpizprice +" x "+ lpizamount +" = "+ (lpizamount * lpizprice) +"<br>") //bereken en print de prijs van alle grote pizzas dat werd gevraagd
+
+function capitalizeFirstLetter(sString) {
+	return sString.charAt(0).toUpperCase() + sString.slice(1);
 }
-document.write("<br>Total = "+ Number((spizamount * spizprice) + (mpizamount * mpizprice) + (lpizamount * lpizprice))) //bereken en print de prijs van alle gevraagde pizzas
+
+function toNLEuro(fNumber) {
+	return Number(fNumber).toLocaleString("nl-NL", { style: "currency", currency: "EUR" });
+}
+
+while (true) { //terwijl de gebruiker niet wenst om de loop stop te zetten...
+	while (currentPizzaSize < 0) {
+		currentPizzaSize = prompt(questionPizzaSize).toUpperCase();
+		currentPizzaSize = answersPizzaSizes.indexOf(currentPizzaSize); // Convert string to number.
+	}
+
+	if (pizzaTotals[currentPizzaSize] == 0) { // Eerste keer pizza groote gekozen...
+		yesNo = "Y";
+	} else { // pizza is al een keer gekozen
+		yesNo = questionChangePizzaTotal(currentPizzaSize);
+	}
+	if (yesNo == "Y") { //als de gebruiker confirmeert... (in geval van een andere antwoord zal de loop resetten)
+		pizzaTotals[currentPizzaSize] = questionHowManyPizzas(currentPizzaSize);
+	}
+
+	do {
+		yesNo = questionAddToOrder(currentPizzaSize);
+	} while (!answersYesNo.includes(yesNo));
+	if (yesNo == "N") { //als de gebruiker niet meer wil bestellen...
+		break;
+	}
+
+	currentPizzaSize = -1;
+}
+
+// Bereken en print de prijs van alle pizzas dat werd gevraagd
+for (i = 0; i < pizzaSizes.length; i++) {
+	if (pizzaTotals[i] > 0) {
+		document.write(
+			capitalizeFirstLetter(pizzaSizes[i]) + " Pizza "
+			+ toNLEuro(pizzaPrices[i]) + " x " + pizzaTotals[i]
+			+ " = " + toNLEuro(pizzaTotals[i] * pizzaPrices[i])
+			+ "<br>"
+		)
+		totalPrice += pizzaTotals[i] * pizzaPrices[i] // Bereken de prijs van alle gevraagde pizzas
+	}
+}
+document.write("<br>Total = " + toNLEuro(totalPrice)) // Print de prijs van alle gevraagde pizzas
