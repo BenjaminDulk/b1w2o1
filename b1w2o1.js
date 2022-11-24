@@ -49,9 +49,7 @@ while (morepiz == 0) { //terwijl de gebruiker niet wenst om de loop stop te zett
 	let morepizchoice = prompt("Do you want to order different sizes other than "+ lastsize +"? (Y/N)"); //als de gebruiker een afmeting heeft gekozen, vraag of ze een andere afmeting willen
 	if (morepizchoice == "N"){ //als de gebruiker niet meer wil bestellen...
 		morepiz = 1 //verander de variabel dat de loop gebruikt om te herhalen
-	} else if (morepizchoice == "Y") { //als de gebruiker meer wil bestellen...
-		morepiz = 0 //hou de variabel dat de loop gebruikt om te herhalen 
-	} else break; //als de gebruiker een ander antwoord geeft, herhaal de loop
+	} 
 }
 
 if (spizamount > 0) { //als de gebruiker voor kleine pizzas had gevraagd tijdens de loop...
